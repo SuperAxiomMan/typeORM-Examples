@@ -27,6 +27,7 @@
   "dependencies": {
     "mysql2": "^2.2.5",
     "reflect-metadata": "^0.1.13",
+    "slugify": "^1.5.3",
     "typeorm": "^0.2.32"
   },
   "scripts": {

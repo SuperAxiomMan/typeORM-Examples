@@ -1,10 +1,11 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+/* eslint-disable no-console */
+import { AfterLoad, BeforeInsert, BeforeRemove, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 import { Article } from './article.model';
 import { BaseModel } from './base.model';
 
 @Entity()
 export class User extends BaseModel {
-    // par défaut, la longueur est de 255
+
     @Column('varchar', {
         nullable: false
     })
@@ -18,8 +19,22 @@ export class User extends BaseModel {
     @OneToMany(() => Article, (article) => article.author)
     public articles?: Article[];
 
+    @AfterLoad()
+    public afterTheLoad() {
+        console.log('Created', this);
+    }
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    @BeforeRemove()
+
+    public beforeTheInsert() {
+        this.firstName += ' Extra Name';
+        console.log('Before Insert : ', this);
+    }
+
     /**
-     * Propriété dite "virtuelle", car elle n'est pas en DB
+     * virtual prop
      */
     get fullName() {
         return `${this.firstName} ${this.lastName}`;

@@ -1,4 +1,5 @@
-import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
+import slugify from 'slugify';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
 import { BaseModel } from './base.model';
 import { Category } from './category.model';
 import { User } from './user.model';
@@ -10,6 +11,20 @@ export class Article extends BaseModel {
         length: 64
     })
     public title!: string;
+
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    public slugifyBefore() {
+        this.slug = slugify(this.title);
+    }
+
+    @Column('varchar', {
+        nullable: false,
+        unique: true
+    })
+    
+    public slug!: string;
 
     @Column('text', {
         nullable: false

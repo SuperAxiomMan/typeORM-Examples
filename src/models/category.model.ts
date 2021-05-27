@@ -1,5 +1,6 @@
 /* eslint-disable no-warning-comments */
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import slugify from 'slugify';
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { Article } from './article.model';
 import { BaseModel } from './base.model';
 
@@ -10,7 +11,17 @@ export class Category extends BaseModel {
     })
     public name!: string;
 
-    // TODO : slugify
+    @BeforeInsert()
+    @BeforeUpdate()
+    public slugifyBefore() {
+        this.slug = slugify(this.name);
+    }
+
+    @Column('varchar', {
+        nullable: false,
+        unique: true
+    })
+    
     @Column('varchar', {
         nullable: false,
         unique: true
