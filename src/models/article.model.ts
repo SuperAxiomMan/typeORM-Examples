@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import slugify from 'slugify';
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
 import { BaseModel } from './base.model';
@@ -12,10 +13,12 @@ export class Article extends BaseModel {
     })
     public title!: string;
 
+    
 
     @BeforeInsert()
     @BeforeUpdate()
     public slugifyBefore() {
+        console.log(this.title);
         this.slug = slugify(this.title);
     }
 

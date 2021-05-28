@@ -1,6 +1,8 @@
+/* eslint-disable no-warning-comments */
 /* eslint-disable no-console */
 
 import { getCustomRepository, getRepository, LessThan } from 'typeorm';
+import { Article } from '../models/article.model';
 import { User } from '../models/user.model';
 import { ArticleRepository } from '../repositories/article.repository';
 
@@ -67,37 +69,37 @@ export class Queries {
 
     }
 
-    static async update(id:number, firstName: string, lastName: string){
+    static async update(id: number, firstName: string, lastName: string) {
         const userRepository = getRepository(User);
 
         const userID = await userRepository.findOne(id);
         if (userID) {
-            userID.firstName =firstName; 
-            userID.lastName =lastName; 
+            userID.firstName = firstName;
+            userID.lastName = lastName;
 
-        await userRepository.save(userID);
+            await userRepository.save(userID);
         }
     }
 
-    static async updatePreload(id:number, firstName: string, lastName: string){
+    static async updatePreload(id: number, firstName: string, lastName: string) {
         const userRepository = getRepository(User);
 
-       const loadedAndMergedUser = await userRepository.preload({
+        const loadedAndMergedUser = await userRepository.preload({
             id,
             firstName,
             lastName
         });
 
         if (loadedAndMergedUser) {
-            loadedAndMergedUser.firstName =firstName; 
-            loadedAndMergedUser.lastName =lastName; 
+            loadedAndMergedUser.firstName = firstName;
+            loadedAndMergedUser.lastName = lastName;
 
-        await userRepository.save(loadedAndMergedUser);
+            await userRepository.save(loadedAndMergedUser);
 
         }
     }
 
-    static async updatePreloadRaw(id:number, firstName: string, lastName: string){
+    static async updatePreloadRaw(id: number, firstName: string, lastName: string) {
         const userRepository = getRepository(User);
         userRepository.update(id, {
             firstName,
@@ -105,35 +107,35 @@ export class Queries {
         });
     }
 
-    static async remove(id:number){
+    static async remove(id: number) {
         const userRepository = getRepository(User);
 
         const user = await userRepository.findOne(id);
 
         if (user) {
-        await userRepository.remove(user);
+            await userRepository.remove(user);
         }
     }
 
-    static async softremove(id:number){
+    static async softremove(id: number) {
         const userRepository = getRepository(User);
 
         const user = await userRepository.findOne(id);
 
         if (user) {
-        await userRepository.softRemove(user);
+            await userRepository.softRemove(user);
         }
     }
 
-    static async userExists(){
+    static async userExists() {
         console.log(await getCustomRepository(ArticleRepository).exists(1));
     }
 
-    static async qbUserArticle(){
+    static async qbUserArticle() {
         const queryBuilder = getRepository(User).createQueryBuilder('users');
 
         const users = await queryBuilder
-        .select()
+            .select()
             .leftJoinAndSelect('users.articles', 'user_articles')
             .where('user_articles.author = :id', {
                 id: 1
@@ -141,10 +143,53 @@ export class Queries {
 
 
         for (const user of users) {
-            const result = `${user.fullName }:${ user.articles?.map(e=>e.title)}`;
+            const result = `${user.fullName}:${user.articles?.map(e => e.title)}`;
             console.log(result);
         }
     }
 
+    static async qbInsert(articleTitle:string, articleContent:string) {
+
+        const newArticle = getRepository(Article).create({
+            title: articleTitle,
+            content: articleContent,
+            author: { id: 1 }
+        });
+
+        const insertQB = await getRepository(Article)
+            .createQueryBuilder()
+            .insert()
+            .values(newArticle)
+            .execute();
+
+        console.log(insertQB.raw);
+
+    }
+
+
+    static async qbUpdatet() {
+        //todo
+    }
+
+    static async qbDelete(id:number) {
+        const article = await getRepository(Article)
+            .createQueryBuilder('article')
+            .delete()
+            .where('article.id = :id', {id})
+            .execute();
+
+        console.log(article.affected);
+    }
+
+    static async qbRelation(){
+        const queryBuilder = getRepository(Article).createQueryBuilder('article')
+        .relation('categories')
+        .of(3)
+        // .remove(3)
+        // .add(3)
+        .set([1, 2, 3, 4]);
+
+        console.log(queryBuilder);
+    }
 
 }
