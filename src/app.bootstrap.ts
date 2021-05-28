@@ -23,6 +23,7 @@ const initApp = async () => {
 
         // Queries.userExists();
         // Queries.qbUserArticle();
+        // Queries.qbInsert('NewArticle', 'Newcontent');
        
 
 
