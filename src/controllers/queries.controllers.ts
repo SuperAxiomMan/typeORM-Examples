@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 
-import { getRepository, LessThan } from 'typeorm';
+import { getCustomRepository, getRepository, LessThan } from 'typeorm';
 import { User } from '../models/user.model';
+import { ArticleRepository } from '../repositories/article.repository';
 
 export class Queries {
 
@@ -123,4 +124,27 @@ export class Queries {
         await userRepository.softRemove(user);
         }
     }
+
+    static async userExists(){
+        console.log(await getCustomRepository(ArticleRepository).exists(1));
+    }
+
+    static async qbUserArticle(){
+        const queryBuilder = getRepository(User).createQueryBuilder('users');
+
+        const users = await queryBuilder
+        .select()
+            .leftJoinAndSelect('users.articles', 'user_articles')
+            .where('user_articles.author = :id', {
+                id: 1
+            }).getMany();
+
+
+        for (const user of users) {
+            const result = `${user.fullName }:${ user.articles?.map(e=>e.title)}`;
+            console.log(result);
+        }
+    }
+
+
 }

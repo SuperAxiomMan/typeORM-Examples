@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
-import { createConnection, getCustomRepository } from 'typeorm';
+import { createConnection, getCustomRepository, getRepository } from 'typeorm';
+import { Queries } from './controllers/queries.controllers';
 import { Article } from './models/article.model';
 import { Category } from './models/category.model';
 import { User } from './models/user.model';
-import { ArticleRepository } from './repositories/article.repository';
+
 
 const initApp = async () => {
     try {
@@ -12,17 +13,19 @@ const initApp = async () => {
             type: 'mysql',
             username: 'root',
             password: 'test',
-            host: 'localhost',        
+            host: 'localhost',
             port: 3306,
             database: 'fullstack_example',
             synchronize: true,
-            entities:[Article, User, Category]
+            entities: [Article, User, Category]
         });
         console.log('connection etablished !');
 
-        console.log(await getCustomRepository(ArticleRepository).exists(1));
+        // Queries.userExists();
+        // Queries.qbUserArticle();
+       
 
-          
+
     } catch (e) {
         console.log(e);
     }
